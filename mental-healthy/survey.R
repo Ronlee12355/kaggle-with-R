@@ -30,7 +30,7 @@ test.data<-survey %>% sample_frac(0.3)
 final_result<-data.table("method"=c("randomForest","bagging","gbm","C50","rpart"),"precision"=rep(0,5),"recall"=rep(0,5))
 
 #rf
-rf.model<-randomForest(treatment~.,data = train.data,ntree=600,importance=T)
+rf.model<-train(treatment~.,data = train.data,method="rf")
 #varImpPlot(rf.model,main = "随机森林变量重要性排序")
 p1=data.table("variable"=rownames(rf.model$importance),"overall"=rf.model$importance[,4]) %>%
   ggplot(aes(variable,overall,fill=factor(variable)))+geom_col()+coord_flip()+

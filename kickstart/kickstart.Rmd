@@ -1,0 +1,165 @@
+---
+title: "How to get kickstart successful"
+author: "Ron Lee"
+date: "8/6/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = TRUE,message = FALSE)
+```
+You can see all my work and EDA [HERE](https://www.zhihu.com/people/sdjsdjsdj/posts)    
+
+
+## This markdown is mainly about the kaggle dataset [kickstart](https://www.kaggle.com/kemical/kickstarter-projects),from kaggle's original content infomation:  
+> I'm a crowdfunding enthusiast and i'm watching kickstarter since its early days. Right now I just collect data and the only app i've made is this twitter bot which tweet any project reaching some milestone: @bloomwatcher . I have a lot of other ideas, but sadly not enough time to develop them... But I hope you can!   
+
+# I would like to make it as a classfication problem and do EDA and feature engineering and data cleaning to modify the raw data and chnage it into processed data that fits my machine learning model.So let's begin
+
+## 1.Load needed packages and import all data
+```{r echo=TRUE,cache=TRUE,message=FALSE}
+  setwd("E:/kaggle/kickstart/kickstart")
+  library(tidyverse)
+  library(data.table)
+  library(magrittr)
+  library(lubridate)
+  library(RColorBrewer)
+
+  ks2018<-fread("ks-projects-201801.csv")
+  ks2016<-fread("ks-projects-201612.csv")
+```
+
+## 2.Have a glimpse of the data and merge them into one file
+```{r echo=FALSE,cache=TRUE}
+  DT::datatable(sample_n(ks2016,100),caption = "ks-projects-2016")
+  DT::datatable(sample_n(ks2018,100),caption = "ks-projects-2018")
+```
+
+### 2.1 See the attribute of every feature
+```{r echo=TRUE,message=TRUE,cache=TRUE}
+  glimpse(ks2016)
+  glimpse(ks2018)
+```
+
+#### seems like two datasets have different colnames and we should delete the extra 4 features
+```{r echo=TRUE,cache=TRUE}
+  ks2016 %<>% select(ID:`usd pledged`)
+  ks2018.extra<-ks2018 %>% select(starts_with("usd_"))
+  ks2016 %<>% mutate(goal=as.numeric(goal),pledged=as.numeric(pledged),backers=as.integer(backers),`usd pledged`=as.numeric(`usd pledged`))
+  ks2016$year_type<-2016
+  ks2018$year_type<-2018
+  ks.all<-ks2016 %>% na.omit() %>% bind_rows(ks2018 %>% select(-starts_with("usd_")) %>% na.omit())
+  ks.all %<>% select(-ID)
+  glimpse(ks.all)
+```
+
+#### Now we have cleaned all data and merge then into one,so the next step is to analyse with ggplot2 and plotly   
+
+
+## 3.EDA 
+### 3.1 Take a look of those distribution of several features(use bar plot to identity the most outstanding value of painting feature)
+```{r echo=TRUE,message=TRUE,cache=TRUE}
+  p1<-ks.all %>% group_by(main_category) %>% summarise(n=n()) %>% arrange(desc(n)) %>% top_n(15,wt=n) %>% ggplot(aes(x=main_category,y=n,fill=as.factor(main_category)))+geom_col()+theme(legend.position = "none")+labs(y="Total Number",title="Top 15 of main category")+coord_flip()
+
+  p2<-ks.all %>% group_by(currency) %>% summarise(n=n()) %>% arrange(desc(n)) %>% top_n(10,wt=n) %>% ggplot(aes(x=currency,y=n,fill=as.factor(currency)))+geom_col()+theme(legend.position = "none")+labs(y="Total Number",title="Currency of all kickstarts")+scale_y_log10()+coord_flip()
+  
+  p3<-ks.all %>% group_by(state) %>% summarise(n=n()) %>% arrange(desc(n)) %>% top_n(6,wt=n) %>% ggplot(aes(x=state,y=n,fill=state))+geom_col()+theme(legend.position = "none")+labs(y="Total Number",title="State of all kickstarts")+coord_flip()
+  
+  p4<-ks.all %>% group_by(country) %>% summarise(n=n()) %>% arrange(desc(n)) %>% top_n(6,wt=n) %>% ggplot(aes(x=country,y=n,fill=country))+geom_col()+theme(legend.position = "none")+labs(y="Total Number",title="country of startups")+coord_flip()
+  
+  gridExtra::grid.arrange(p1,p2,p3,p4,ncol=2)
+```
+
+### 3.2 hist plot for numberic features
+```{r echo=TRUE,message=FALSE,cache=TRUE,warning=FALSE}
+  p1<-ks.all %>% ggplot(aes(x=log10(goal),fill="blue"))+geom_histogram()+labs(title="Distribute of goal")+theme(legend.position = "none")
+
+  p2<-ks.all %>% ggplot(aes(x=log10(pledged),fill="red"))+geom_histogram()+labs(title="Distribute of pledged")+theme(legend.position = "none")+geom_vline(xintercept = log10(median(ks.all$pledged)),color="blue")+annotate("text",x=1.1,y=50000,label=paste("Median value is :",median(ks.all$pledged)))
+  
+  gridExtra::grid.arrange(p1,p2)
+```
+
+### 3.3 let's see the relation between goal and main category
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  p1<-ks.all %>% group_by(main_category) %>% mutate(goal=log10(goal),mean_goal=mean(goal)) %>% arrange(desc(mean_goal)) %>% top_n(20,wt=mean_goal) %>% ggplot(aes(x=main_category,y=goal,fill=as.factor(main_category)))+geom_boxplot()+labs(title="goal value between different main category",y="log10 of goal",fill="main_category")+theme(axis.text.x = element_text(angle = 35,hjust = 1))
+
+
+  p2<-ks.all %>% group_by(year_type) %>% ggplot(aes(x=year_type,y=log10(goal),fill=as.factor(year_type)))+geom_boxplot()+labs(title="goal value of different year",fill="year of 2018 or 2016")+scale_x_discrete(limits=c(2016,2018))
+  p3<-ks.all %>% ggplot(aes(x=state,y=log10(goal),fill=as.factor(state)))+geom_boxplot()+labs(title="goal value of state",fill="state",y="log value of goal")
+  gridExtra::grid.arrange(p1,p2,p3)
+```
+
+### 3.4 Time gap of different project state,but first we need calculate the time interval
+```{r echo=TRUE,message=FALSE,cache=TRUE,warning=FALSE}
+  ks.all %<>% mutate(deadline=ymd_hms(deadline),launched=ymd_hms(launched))
+  ks.all$time_gap<-interval(ks.all$launched,ks.all$deadline) %>% time_length("week")
+  ks.all %>% ggplot(aes(x=state,y=time_gap,fill=state))+geom_boxplot()+scale_y_continuous(limits = c(0,20))+stat_summary(fun.y = mean,geom = "point",size=3)
+  
+  ks.all %>% mutate(launched=year(launched)) %>% select(launched,state) %>% na.omit() %>% group_by(launched,state) %>% summarise(n=n()) %>% ggplot(aes(x=launched,y=n,fill=state)) + geom_col()+scale_x_continuous(limits = c(2008,2018))+labs(title="State of projects in every year")
+  
+  ks.all %>% mutate(days_length=interval(launched,deadline) %>% time_length("day")) %>% filter(days_length < 100) %>% ggplot(aes(days_length)) + geom_density(colour="royalblue4", size=1.5)+ggtitle("Density of project's time gap(days)")
+```
+
+To be honest I don't see any difference there,but if one project is a success,the time gap of launche and dedlie should be close.    
+
+#### 3.5 In this part,we kind of want to know which category would like to be failed or successful and also the heatmap of goal and pledged money
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  ks.all %>% group_by(main_category,state) %>% summarise(total=n()) %>% ggplot(aes(x=main_category,y=total,fill=state))+geom_bar(stat = "identity")+theme(axis.text.x = element_text(angle = 35,vjust = 0.5))+ggrepel::geom_text_repel(aes(label=total))+labs(title="Barplot of main category and state")
+
+  p2<-ks.all %>% group_by(main_category,state) %>% summarise(hgoal=mean(goal)) %>% ggplot(aes(x=main_category,y=state,fill=hgoal))+geom_tile()+scale_fill_continuous(low = "blue",high = "red")+theme_bw()+theme(axis.text.x = element_text(angle = 35,vjust = 0.5))+labs(title="Heatmap of main category and state of goal money",fill="goal")
+  
+  p3<-ks.all %>% group_by(main_category,state) %>% summarise(hpledged=mean(pledged)) %>% ggplot(aes(x=main_category,y=state,fill=hpledged))+geom_tile()+scale_fill_continuous(low = "blue",high = "red")+theme_bw()+labs(title="Heapmap of main category and state of pledged money",fill="pledged")+theme(axis.text.x = element_text(angle = 35,vjust = 0.5))
+  
+  gridExtra::grid.arrange(p2,p3)
+```
+
+From the bar plot above we find that the category of **Film&Video** possesses more projects and absolute number of successful project in **Film&Video** and **Music** is huge,so those two categroies are hightly correlated to success.     
+Also in those two heatmaps,money of goal in **Journalism** and **Publishing** is really high,seems **Technology**,**Games** and **Design** are guranteed with more money.
+
+### 3.6 We want more infos about successful projects     
+1. Successful and failure about category
+```{r echo=TRUE,warning=FALSE,cache=TRUE}
+  p1<-ks.all %>% filter(state=="successful") %>% group_by(main_category) %>% summarise(count_successful=n()) %>% ggplot(aes(area=count_successful,fill=main_category,label=main_category))+treemapify::geom_treemap()+treemapify::geom_treemap_text(grow = T,color="white",place = "center")+theme(legend.position = "none")+ggtitle("Treemap about successful projects in each main category")
+
+  p2<-ks.all %>% filter(state=="failed") %>% group_by(main_category) %>% summarise(count_fail=n()) %>% ggplot(aes(area=count_fail,fill=main_category,label=main_category))+treemapify::geom_treemap()+treemapify::geom_treemap_text(grow = T,color="white",place = "center")+theme(legend.position = "none")+ggtitle("Treemap about failed projects in each main category")
+  
+  gridExtra::grid.arrange(p1,p2,nrow=2)
+```
+
+Apprantly,Music and Film&Video are the project categories that are more likely to be successful and Publishing is more likely to be failed    
+
+2. Successful and failure about launched time
+```{r echo=TRUE,warning=FALSE,cache=TRUE}
+  ks.all %>% filter(state %in% c("successful","failed")) %>% mutate(month=month(launched,label = T)) %>% group_by(month,state) %>% count() %>% ggplot(aes(x=month,y=n,fill=state))+geom_col(position = "dodge")+theme_bw()+labs(title="Launched time with state",y="Count")+theme(legend.position = "top")+scale_fill_brewer(palette = "YIOrRd")
+
+  ks.all %>% filter(state %in% c("successful","failed")) %>% mutate(month=wday(launched,label = T)) %>% group_by(month,state) %>% count() %>% ggplot(aes(x=month,y=n,fill=state))+geom_col(position = "dodge")+theme_bw()+labs(title="Launched time with state",y="Count",x="Week")+theme(legend.position = "top")+scale_fill_brewer(palette = "Set2")
+  
+  ks.all %>% filter(state %in% c("successful","failed")) %>% mutate(month=wday(launched,label = T)) %>% group_by(month,state,main_category) %>% summarise(total=n()) %>% ggplot(aes(x=month,y=total,fill=state))+geom_col(position = "dodge")+theme_bw()+labs(title="Launched time with state of each category",y="Count",x="Week")+theme(legend.position = "top")+scale_fill_brewer(palette = "Set1")+facet_wrap(~main_category)
+```
+
+**Fun Facts:**Projects launched in Jan and Dec(month) are more likely to fail,in week Sun and Sat,so please don't launch your projects on those periods.LOL    
+
+3. Backers Info
+```{r echo=TRUE,warning=FALSE,cache=TRUE}
+  p1<-ks.all %>% ggplot(aes(x=state,y=log10(backers),fill=state))+geom_boxplot()+labs(title="Backers by state",y="Backers in log10")
+  p2<-ks.all %>% ggplot(aes(x=main_category,y=log10(backers),fill=main_category))+geom_boxplot()+labs(title="Backers by main category",y="Backers in log10")+coord_flip()
+```
+
+```{r echo=TRUE,warning=FALSE,cache=TRUE}
+  p1<-ks.all %>% ggplot(aes(x=goal,y=pledged,color=state))+geom_point()+theme_bw()
+  plotly::ggplotly(p1)
+```
+
+4. Wordcloud of project names
+```{r echo=TRUE,warning=FALSE,cache=TRUE}
+  library(tidytext)
+
+  ks.all %>% unnest_tokens(words,name) %>% filter(!(words %in% stop_words$word) & !(words %in% stop_words$lexicon)) %>% count(words,sort=T) %>% ungroup() %>% head(200) %>% with(wordcloud::wordcloud(words,n,colors = brewer.pal(8,"Dark2")))
+```
+
+5. Corrplot of numeric features
+```{r echo=TRUE,warning=FALSE,cache=TRUE}
+  ks.all %>% select(-year_type) %>% select_if(is.numeric) %>% cor() %>% corrplot::corrplot.mixed()
+  ks.all %>% select(-year_type) %>% select_if(is.numeric) %>% mutate_all(log10) %>% filter_all(all_vars(is.finite(.))) %>% sample_n(1000) %>% car::scatterplotMatrix()
+```
+

@@ -1,0 +1,236 @@
+---
+title: "Who is more likely to become a telco churn"
+author: "Ron Lee"
+date: "9/26/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE,message = FALSE,cache = TRUE)
+```
+
+## About this analysis  
+Actually I tend to make the most of this clear-format data to practice my skills of EDA and model building,since it's been a while that I haven't work on data mining project.  
+
+## Process of analyzing the data  
+### 1.1 Load the needed packages
+
+```{r echo=TRUE,message=FALSE,cache=TRUE,warning=FALSE}
+  library(tidyverse)
+  library(corrplot)
+  library(pROC)
+  library(caret)
+  library(RColorBrewer)
+  library(ggalluvial)
+  library(xgboost)
+```
+
+### 1.2 Import the data and have a glimpse 
+```{r echo=TRUE,cache=TRUE,warning=FALSE}
+  churn<-suppressMessages(read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv"))
+  glimpse(churn)
+```
+
+**There are 7043 observations and 21 variables**,the response variable we want to predict is Churn and clearly we can observe from the glimpse info that the class of value of many variables is character, so we want to switch them to factor -- the category value in R.   
+
+```{r echo=TRUE,cache=TRUE,warning=FALSE}
+  churn<- churn %>% mutate_if(is.character,as.factor) %>% select(-customerID)
+  churn$SeniorCitizen<-if_else(churn$SeniorCitizen==1,"Yes","No") %>% as.factor()
+  glimpse(churn)
+```
+
+## 1.3 Take a look at the distribution of Churn and the relations between gender and churn
+```{r echo=TRUE,message=FALSE,cache=TRUE,warning=FALSE}
+  churn %>% ggplot(aes(x=Churn))+geom_bar(fill = c("#FC4E07", "#E7B800"))
+  churn %>% group_by(Churn,gender) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=gender))+geom_col()+
+    ggrepel::geom_label_repel(aes(label=n))+labs(title="gender & churn",y="Number")
+  table(churn$Churn)/nrow(churn)
+```
+
+* For most of customers,they tend to stay at the platform   
+* There is no difference between gender,male and female leave the platform in the same possibility(50%)
+
+## 1.4 Churn with the only numberic variables
+#### According to the introduction of the data,most of the features are in factor format,only charges related features are quantitive  
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  churn %>% ggplot(aes(x=MonthlyCharges,y=TotalCharges,color=Churn))+geom_point()+scale_color_brewer(palette="Set1")+geom_jitter()+ggforce::facet_zoom(x= MonthlyCharges>75,y= Churn == "Yes",split = T)
+```
+* People with less monthly charges tend to leave  
+* People with more total charges are more likely to stay
+* So,officials should pay more attention to those who spend more money and provide them with more discount  
+
+## 1.5 Missing Values
+It appears that **some missing values** are mixed in the data which cause some warning messages when I executed the R codes,maybe we should look at it
+
+```{r echo=TRUE,message=FALSE,warning=FALSE,cache=TRUE}
+  sapply(churn, function(x){
+    return(sum(is.na(x)))
+  })
+  
+```
+
+Only **TotalCharges** variable has missing ones,replacing 11 NAs with the median value would be a reasonal solution to that.
+```{r echo=TRUE,cache=TRUE}
+  churn$TotalCharges<-if_else(is.na(churn$TotalCharges),median(churn$TotalCharges,na.rm = T),churn$TotalCharges)
+```
+
+## 1.6 Maybe it's time to scan all the features and find the highly related variables
+```{r echo=TRUE,cache=TRUE,warning=FALSE,message=FALSE}
+  p1<-churn %>% group_by(Churn,SeniorCitizen) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=SeniorCitizen))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="senior & churn",y="Number")
+  p2<-churn %>% group_by(Churn,Partner) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=Partner))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="Partner & churn",y="Number")
+  p3<-churn %>% group_by(Churn,Dependents) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=Dependents))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="Dependents & churn",y="Number")
+  p4<-churn %>% group_by(Churn,PhoneService) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=PhoneService))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="PhoneService & churn",y="Number")
+  p5<-churn %>% group_by(Churn,MultipleLines) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=MultipleLines))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="MultipleLines & churn",y="Number")
+  p6<-churn %>% group_by(Churn,InternetService) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=InternetService))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="InternetService & churn",y="Number")
+  p7<-churn %>% group_by(Churn,OnlineSecurity) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=OnlineSecurity))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="OnlineSecurity & churn",y="Number")
+  p8<-churn %>% group_by(Churn,DeviceProtection) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=DeviceProtection))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="DeviceProtection & churn",y="Number")
+  p9<-churn %>% group_by(Churn,TechSupport) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=TechSupport))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="TechSupport & churn",y="Number")
+  p10<-churn %>% group_by(Churn,PaperlessBilling) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=PaperlessBilling))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="PaperlessBilling & churn",y="Number")
+  p11<-churn %>% group_by(Churn,PaymentMethod) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=PaymentMethod))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="PaymentMethod & churn",y="Number")
+    p12<-churn %>% group_by(Churn,Contract) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=Contract))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="Contract & churn",y="Number")
+    p13<-churn %>% group_by(Churn,StreamingMovies) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=StreamingMovies))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="StreamingMovies & churn",y="Number")
+    p14<-churn %>% group_by(Churn,StreamingTV) %>% count() %>% ggplot(aes(x=Churn,y=n,fill=StreamingTV))+geom_col()+ggrepel::geom_label_repel(aes(label=n))+labs(title="StreamingTV & churn",y="Number")
+  gridExtra::grid.arrange(p1,p2,nrow=2)
+  gridExtra::grid.arrange(p3,p4,nrow=2)
+  gridExtra::grid.arrange(p5,p6,nrow=2)
+  gridExtra::grid.arrange(p7,p8,nrow=2)
+  gridExtra::grid.arrange(p9,p10,nrow=2)
+  gridExtra::grid.arrange(p11,p12,nrow=2)
+  gridExtra::grid.arrange(p13,p14,nrow=2)
+```
+
+I feel sorry to say that I should have defined a function to write less codes and make those codes more readable.If you have a glimpse of those stacked bar plots,customers with specific labels are more likely to become a yes-to-churn person
+
+## 1.6 One more feature
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  churn %>% ggplot(aes(x=Churn,y=tenure,fill=Churn))+geom_boxplot()+ggtitle("tenure & churn")+stat_summary(fun.y = mean,geom = "point")+ggthemes::theme_economist_white()+scale_fill_brewer(palette = "RdGy")
+```
+
+## 1.7 Observe three features at the same time
+* Payment methods in real life has strong connections to the amount of charges,but that's only our hypothesis,pictures would tell you the truth.
+* Signing a contract means you have a deal with the platform and you should follow the disciplines.   
+
+```{r}
+  churn %>% ggplot(aes(x=PaymentMethod,y=MonthlyCharges,fill=Churn))+geom_boxplot()+scale_fill_brewer(palette = "Set3")+ggthemes::theme_solarized()+ggtitle("Monthly Charges & PaymentMethods")
+  
+  churn %>% ggplot(aes(x=Contract,y=MonthlyCharges,fill=Churn))+geom_boxplot()+scale_fill_brewer(palette = "OrRd")+ggtitle("Monthly Charges & PaymentMethods")+ggthemes::theme_tufte()
+  
+  churn %>% select_if(is.numeric) %>% cor() %>% corrplot.mixed()
+```
+
+1. From the plots drawed above,**Tenure** and **TotalCharges** are highly related,it gives the proof that these two features play an vital role in determining which customer would leave.
+
+```{r cache=TRUE}
+  p1<-churn %>% ggplot(aes(x=TotalCharges,y=Churn,fill=Churn))+ggridges::geom_density_ridges()+ggridges::theme_ridges()+scale_fill_brewer(palette = "Set2")
+  p2<-churn %>% ggplot(aes(x=MonthlyCharges,y=Churn,fill=Churn))+ggridges::geom_density_ridges()+ggridges::theme_ridges()+scale_fill_brewer(palette = "Set3")
+  gridExtra::grid.arrange(p1,p2)
+```
+
+2. As for TotalCharges,ridge plots show no clear evidence that it can classify whether you churn or not,but monthlycharges plot explictly tells us that clients with higher MonthlyCharges are more likely to churn.
+
+
+## 2.1 Feature importances
+At first we realize that this churn data contains three quantitive features and the other is categorical,but are they all important?clearly not.To get the preliminary feature importance,we build a simple model with rpart function,which is a well-known CART decision tree algorithm.
+
+```{r echo=TRUE,message=FALSE,warning=FALSE,cache=TRUE}
+  rp.model<-rpart::rpart(Churn~.,data = churn,method = "class")
+  rpart.plot::rpart.plot(rp.model)
+  varImp(rp.model) %>% rownames_to_column(var="feature") %>% filter(Overall != 0)  %>% arrange(desc(Overall)) %>% ggplot(aes(x=reorder(feature,Overall),y=Overall,fill=feature))+geom_col()+coord_flip()+ggtitle("Feature Importances")+theme_bw()+scale_fill_brewer(palette = "Paired")+theme(legend.position = "none")
+```
+
+3. The importances of feature are shown in bar,the three numerical features are both essential predictors for churn.
+
+```{r cache=TRUE,echo=TRUE}
+  churn$TechSupport<-gsub("No internet service","No",churn$TechSupport)
+  churn$OnlineSecurity<-gsub("No internet service","No",churn$OnlineSecurity)
+  churn$MultipleLines<-gsub("No phone service","No",churn$MultipleLines)
+  churn$OnlineBackup<-gsub("No internet service","No",churn$OnlineBackup)
+  churn$DeviceProtection<-gsub("No internet service","No",churn$DeviceProtection)
+  churn$StreamingTV<-gsub("No internet service","No",churn$StreamingTV)
+  churn$StreamingMovies<-gsub("No internet service","No",churn$StreamingMovies)
+  
+  churn$PaymentMethod<-as.factor(sapply(churn$PaymentMethod, function(x){x=unlist(str_split(x," "))[1]}))
+  
+  churn %>% group_by(OnlineSecurity,Contract,TechSupport,InternetService,PaymentMethod,Churn) %>% count() %>% rename(Freq=n) %>% ggplot(aes(axis1=OnlineSecurity,axis2=Contract,axis3=TechSupport,axis4=InternetService,axis5=PaymentMethod,y=Freq))+scale_x_discrete(limits = c("OnlineSecurity","Contract","TechSupport","InternetService","PaymentMethod"), expand = c(.1, .05))+geom_alluvium(aes(fill=Churn))+geom_stratum()+theme_minimal()+geom_text(stat = "stratum",label.strata = TRUE)+coord_flip()
+```
+
+## 2.2 Clean the data for model fitting
+1. scale all those numberical features
+2. transform all categorical features into numberical using model.matrix function
+3. randomly split the data into two parts(70% for training,30% for validation)
+
+```{r echo=TRUE,message=TRUE,cache=TRUE}
+  churn<-churn %>% select(-gender)
+  churn[,c("MonthlyCharges","TotalCharges")]<-sapply(churn[,c("MonthlyCharges","TotalCharges")],function(x){
+    return((x-min(x))/max(x))
+  })
+
+  trans.churn<-as.data.frame(sapply(churn %>% select(-c(MonthlyCharges,TotalCharges,tenure,Churn)), function(x){
+    return(model.matrix(~x-1,data = churn %>% select(-c(MonthlyCharges,TotalCharges,tenure,Churn))))
+  })) %>% bind_cols(churn %>% select(MonthlyCharges,TotalCharges,tenure,Churn))
+  glimpse(trans.churn)
+  
+  ind<-sample(2,nrow(trans.churn),replace = T,prob = c(0.7,0.3))
+  train.churn<-trans.churn[ind==1,]
+  test.churn<-trans.churn[ind==2,]
+```
+
+## 3.1 Model building:Random Forest
+```{r echo=TRUE,cache=TRUE,message=FALSE}
+  rf.model<-train(Churn~.,data = train.churn,method="rf",tuneGrid=expand.grid(mtry=c(2,3)),importance=T,metric = "ROC",ntree=500,trControl=trainControl(classProbs = T))
+  rf.model
+  varImp(rf.model) %>% plot(main="Features of random forest")
+  rf.pred<-predict(rf.model,test.churn)
+  confusionMatrix(rf.pred,reference = test.churn$Churn,mode="everything",positive = "Yes")
+  rf.roc<-roc(test.churn$Churn,predict(rf.model,test.churn,type = "prob")[,2],levels = levels(test.churn$Churn))
+```
+
+
+## 3.2 model building:XGboost
+```{r echo=TRUE,message=FALSE,cache=TRUE,warning=FALSE}
+  xg.train<-xgb.DMatrix(train.churn %>% select(-Churn) %>% as.matrix(),label=train.churn$Churn)
+  xg.test<-xgb.DMatrix(as.matrix(test.churn %>% select(-Churn)),label=test.churn$Churn)
+  
+  xg.model<-xgb.train(params = list(max_depth=7,eval_metric="error"),data = xg.train,watchlist = list(validation=xg.test),nrounds = 500,print_every_n = 50,early_stopping_rounds = 200)
+  
+  xg.pred<-predict(xg.model,xg.test)
+  xg.roc<-roc(test.churn$Churn,xg.pred)
+  confusionMatrix(as.factor(ifelse(xg.pred >= 0.5,"Yes","No")),reference = test.churn$Churn,positive = "Yes",mode = "everything")
+  xgb.plot.importance(xgb.importance(colnames(xg.train),model=xg.model),xlab = "Relative importance")
+```
+
+## 3.3 model building:GLM
+```{r echo=TRUE,cache=TRUE}
+  glm.model<-glm(Churn~.,data = train.churn,family = "binomial")
+  glm.model %>% summary()
+  glm.model_1<-MASS::stepAIC(glm.model,direction = "both")
+  glm.pred<-predict(glm.model_1,test.churn,type = "response")
+  summary(glm.model_1)
+  confusionMatrix(ifelse(glm.pred>=0.5,"Yes","No") %>% as.factor(),test.churn$Churn,positive = "Yes",mode="everything")
+  glm.roc<-roc(test.churn$Churn,glm.pred)
+```
+
+## 3.2 ROC comparison
+```{r echo=TRUE,cache=TRUE,message=FALSE}
+  plot.roc(xg.roc,col="black",legacy.axes = T)
+  plot.roc(rf.roc,col="blue",add = T)
+  plot.roc(glm.roc,add=TRUE,col="red")
+  legend("bottom", c("XGBoost","Random Forest", "Logistic"),
+       lty = c(1,1), lwd = c(2, 2), col = c("black", "red", "blue"), cex = 0.75)
+```
+
+## 4 Conclusion
+**In this markdown**,we deeply ananlyzed the churn data from kaggle in various methods and machine learning algotithms.Maybe we should walk you through the procesure once again just in case you miss.   
+1. read in the data and have a glimpse at it   
+2. transform the character features into categorical   
+3. EDA about all the other features regarding to the predictor--Churn   
+4. using rpart decision tree algorithm to roughly see the importance of each feature   
+5. change all categorical features into numerical ones with built-in function model.matrix   
+6. fit three different machine learning models using xgboost,random forest and logistic regression  
+
+### What can we get from the roc comparision plot
+> random forest make the best prediction    
+> in general,xgboost always does a good job in prediction,but in this special case,it fails.Maybe I should find it out  
+> tenure,monthlycharges and totalcharges are the top3 most important features   
+
+# Hope you enjoy my markdown

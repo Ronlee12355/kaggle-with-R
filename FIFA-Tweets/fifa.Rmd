@@ -1,0 +1,105 @@
+---
+title: "NLP process of FIFA's twitter data"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+# Introduction of this project
+
+The FIFA WorldCup is an international sports which is favored by millions of soccer fans around the world. In this project, we are gonna make some visualization and natural language processing of the tweets data
+
+## 1. Read and glimpse of data
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  setwd("~/Documents/kaggle_data/fifa")
+  list.files()
+  
+  library(tidyverse)
+  library(tidytext)
+  library(visNetwork)
+  
+  fifa<-read_csv('FIFA.csv')
+  glimpse(fifa)
+```
+
+There are 530000 observations and 16 features in the data, but we just need some of them, so some features can be ignored.
+
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  fifa<-fifa %>% filter(lang == 'en') %>% select(Source,len,Tweet,Hashtags,
+                                                 RTs,UserMentionNames,Name,Place)
+  glimpse(fifa)
+  
+```
+
+## 2.EDA
+
+### 2.1Top words in tweets
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  fifa_tidy<-fifa %>% unnest_tokens(words,Tweet) %>% filter(!(words %in% stop_words$word)) %>% filter(str_detect(words,'[a-z]'))
+
+  fifa_tidy %>% count(words,sort = T) %>% top_n(20,wt=n) %>%
+    ggplot(aes(x=reorder(words,n),y=n))+geom_col(fill="#AAB7B8")+theme_bw()+
+    labs(y='',x='',title="Top words in tweets")+coord_flip()
+  
+  fifa_tidy %>% filter(str_detect(Source,'^Twitter for')) %>%
+    count(Source,words,sort = T) %>% group_by(Source) %>% top_n(10,wt=n) %>%
+    ggplot(aes(x=reorder(words,n),y=n,fill=Source))+geom_col()+
+    theme_bw()+facet_wrap(~Source,scales =  "free",ncol = 2)+
+    labs(y='',x='',title="Top words of tweets in Each source")+coord_flip()+
+    theme(legend.position = "none")
+```
+### 2.2 Worldcloud of words
+
+```{r echo=TRUE,cache=TRUE,message=FALSE}
+  fifa_tidy %>% count(words,sort = T) %>% top_n(500,wt=n) %>% wordcloud2::wordcloud2()
+
+  fifa_tidy_sentiment<-fifa_tidy %>% rename(word=words) %>%
+    inner_join(get_sentiments('bing'),by='word')
+  
+  fifa_tidy_sentiment %>% group_by(word,sentiment) %>% summarise(total=n()) %>%
+    ungroup() %>% group_by(sentiment) %>% arrange(desc(total)) %>% top_n(10) %>%
+    ggplot(aes(x=reorder(word,total),y=total,fill=sentiment))+geom_col()+
+    facet_wrap(~sentiment,scales = "free")+theme_bw()+coord_flip()+
+    theme(legend.position = "none")
+  
+  fifa_tidy_sentiment %>% group_by(word,sentiment) %>% summarise(total=n()) %>% 
+    arrange(desc(total)) %>% 
+    reshape2::acast(word ~ sentiment, value.var = "total", fill = 0) %>% 
+    wordcloud::comparison.cloud(colors = c("#F8766D", "#00BFC4"),max.words = 350)
+```
+
+### 2.3 More sentiments in tweets
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  fifa_all_sens<-fifa_tidy %>% rename(word=words) %>% inner_join(get_sentiments('nrc'),by="word")
+
+  fifa_all_sens %>% count(word,sentiment,sort = T) %>% group_by(sentiment) %>% top_n(10) %>%
+    ggplot(aes(x=reorder(word,n),y=n,fill=sentiment))+
+    geom_col(show.legend = F)+ theme_bw()+facet_wrap(~sentiment,scales = "free",ncol = 3)+
+    theme(legend.position = "none")+coord_flip()+labs(x='',y='',title="The top 10 words under each sentiment category")
+  
+  fifa_all_sens %>% group_by(word,sentiment) %>% count() %>% bind_tf_idf(word,sentiment,n) %>% 
+    arrange(desc(tf_idf)) %>% group_by(sentiment) %>% top_n(15) %>% ggplot(aes(x=reorder(word,-n),y=n,fill=sentiment))+
+    geom_col(show.legend = F)+labs(x=NULL,y="tf-idf")+facet_wrap(~sentiment,ncol = 3,scales = "free")+coord_flip()
+```
+
+### 2.4 N-grams
+```{r echo=TRUE,message=FALSE,cache=TRUE}
+  fifa_ngram<-fifa %>% unnest_tokens(bigram,Tweet,token = "ngrams", n=2) %>% select(bigram) %>%
+  separate(bigram,c("w1","w2"),sep=" ") %>% 
+  filter(!w1 %in% stop_words$word,!w2 %in% stop_words$word) %>% count(w1,w2,sort = T)
+
+  fifa_ngram %>% unite(bigram,w1,w2,sep = " ") %>% wordcloud2::wordcloud2()
+  
+  fifa_ngram %>% filter(w1=='worldcup') %>% inner_join(get_sentiments('afinn'),by=c(w2="word")) %>% 
+    count(w2,score,sort = T) %>% mutate(contribution=nn*score) %>% arrange(desc(abs(contribution))) %>% 
+    mutate(w2=reorder(w2,contribution)) %>% ggplot(aes(w2,contribution,fill=contribution > 0))+
+    geom_col(show.legend = F)+coord_flip()
+```
+
+```{r cache=TRUE,message=FALSE,echo=TRUE}
+  big_graph<-na.omit(fifa_ngram) %>% mutate(section=row_number() %/% 10) %>% filter(n>4000) %>%
+  igraph::graph_from_data_frame() %>% toVisNetworkData()
+  visNetwork(big_graph$nodes,big_graph$edges) %>% visOptions(highlightNearest = TRUE)
+```
+

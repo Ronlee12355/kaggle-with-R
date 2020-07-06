@@ -1,0 +1,86 @@
+---
+title: "United Nations Populations"
+author: "Jiang Li"
+date: "4/20/2020"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: 
+      collapsed: false
+      smooth_scroll: TRUE
+---
+
+```{r setup, include=FALSE,message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Dataset Overview   
+
+This dataset was downloaded from Facebook website, I took a look and I think that it would be fun for me to recall the ggplot2 visualization skills and walk myself through the entire EDA procedure.  
+
+```{r message=FALSE}
+suppressMessages(library(tidyverse))
+suppressMessages(library(cowplot))
+
+df <- read_csv('~/Downloads/UnitedNationsPopulationdataset.csv')
+glimpse(df)
+```
+
+Clearly, we got five features in the dataset and three are strings and two are numeric, so the following steps of analysis is simple.  
+
+## Data pre-processing   
+```{r}
+df <- df %>% rename(Country.Code=`Country Code`, Country.Name=`Country Name`, Fertility.Rate=`Fertility Rate`)
+df <- df %>% mutate(Year=as.factor(Year))
+
+df.long <- df %>% spread(Year, Fertility.Rate)
+df.long <- df.long %>% rename(Y1980=`1980`,Y2018=`2018`)
+glimpse(df)
+glimpse(df.long)
+```
+
+## EDA  
+
+### Top 10 countries ranked by Fertility Rate
+```{r message=FALSE}
+  df %>% group_by(Year) %>% arrange(desc(Fertility.Rate)) %>% top_n(10) %>% ungroup() %>% ggplot(aes(x=reorder(Country.Name, Fertility.Rate),y=Fertility.Rate, fill=Country.Name))+geom_col()+facet_grid(~Year)+
+  labs(x='',fill=NA)+theme_classic()+theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = 90,hjust = 1)
+  )
+```
+
+### Average Fertility Rate in Regions  
+```{r}
+ p1<-df %>% ggplot(aes(x=Region, y=Fertility.Rate, fill=Year))+geom_boxplot()+labs(x='')+
+  theme_classic()+theme(
+    axis.text.x = element_text(angle = 90,hjust = 1)
+  )
+p2<-df %>% group_by(Region,Year) %>% summarise(Fertility.Rate=mean(Fertility.Rate)) %>%
+  ggplot(aes(x=Region,y=Year,fill=Fertility.Rate))+geom_tile()+
+  scale_fill_continuous(low="blue",high="red")+theme_classic()+theme(
+    axis.text.x = element_text(angle = 90,hjust = 1)
+  )
+plot_grid(p1,p2)
+```
+
+### Fertility Rate Change in Countries   
+```{r}
+p1<-df.long %>% mutate(status=case_when(Y2018>=Y1980 ~ 'Increase',Y2018<Y1980 ~ 'Decrease'),change=Y2018-Y1980) %>% group_by(change) %>% top_n(10) %>% ggplot(aes(x=reorder(Country.Name,-change),y=change,fill=status))+geom_col()+
+  labs(x='')+theme_classic()+theme(
+    axis.text.x = element_blank()
+  )
+p2<-df.long %>% ggplot(aes(x=Y2018,y=Y1980,color=Region))+geom_point()+theme_classic()
+plot_grid(p1,p2,nrow = 2)
+```
+
+### Countries with Increased & Decreased Rate   
+```{r}
+library(ggalluvial)
+  df.long %>% mutate(status=case_when(Y2018>=Y1980 ~ 'Increase',Y2018<Y1980 ~ 'Decrease')) %>% group_by(Region,status) %>% count() %>% ggplot(aes(y=n,axis1=Region,axis2=status))+geom_flow(aes(fill=status),width = .4)+geom_stratum(width = .4)+geom_text(stat = "stratum", infer.label = TRUE)+theme_classic()
+```
+
+### Session Info   
+```{r}
+devtools::session_info()
+```

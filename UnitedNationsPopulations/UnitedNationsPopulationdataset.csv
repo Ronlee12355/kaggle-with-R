@@ -1,0 +1,375 @@
+Country Name,Country Code,Region,Year,Fertility Rate
+Aruba,ABW,The Americas,1980,4.82
+Afghanistan,AFG,Asia,1980,7.45
+Angola,AGO,Africa,1980,7.379
+Albania,ALB,Europe,1980,6.186
+United Arab Emirates,ARE,Middle East,1980,6.928
+Argentina,ARG,The Americas,1980,3.109
+Armenia,ARM,Asia,1980,4.55
+Antigua and Barbuda,ATG,The Americas,1980,4.425
+Australia,AUS,Oceania,1980,3.453
+Austria,AUT,Europe,1980,2.69
+Azerbaijan,AZE,Asia,1980,5.571
+Burundi,BDI,Africa,1980,6.953
+Belgium,BEL,Europe,1980,2.54
+Benin,BEN,Africa,1980,6.282
+Burkina Faso,BFA,Africa,1980,6.291
+Bangladesh,BGD,Asia,1980,6.725
+Bulgaria,BGR,Europe,1980,2.31
+Bahrain,BHR,Middle East,1980,7.09
+Bosnia and Herzegovina,BIH,Europe,1980,3.77
+Belarus,BLR,Europe,1980,2.67
+Belize,BLZ,The Americas,1980,6.5
+Bolivia,BOL,The Americas,1980,6.7
+Brazil,BRA,The Americas,1980,6.21
+Barbados,BRB,The Americas,1980,4.333
+Brunei Darussalam,BRN,Asia,1980,6.487
+Bhutan,BTN,Asia,1980,6.67
+Botswana,BWA,Africa,1980,6.615
+Central African Republic,CAF,Africa,1980,5.84
+Canada,CAN,The Americas,1980,3.811
+Switzerland,CHE,Europe,1980,2.44
+Chile,CHL,The Americas,1980,5.113
+China,CHN,Asia,1980,5.758
+Cote d'Ivoire,CIV,Africa,1980,7.351
+Cameroon,CMR,Africa,1980,5.647
+Colombia,COL,The Americas,1980,6.807
+Comoros,COM,Africa,1980,6.792
+Cabo Verde,CPV,Africa,1980,6.885
+Costa Rica,CRI,The Americas,1980,6.451
+Cuba,CUB,The Americas,1980,4.182
+Cyprus,CYP,Europe,1980,3.5
+Czech Republic,CZE,Europe,1980,2.09
+Germany,DEU,Europe,1980,2.37
+Djibouti,DJI,Africa,1980,6.461
+Denmark,DNK,Europe,1980,2.57
+Dominican Republic,DOM,The Americas,1980,7.555
+Algeria,DZA,Africa,1980,7.524
+Ecuador,ECU,The Americas,1980,6.721
+Eritrea,ERI,Africa,1980,6.899
+Spain,ESP,Europe,1980,2.86
+Estonia,EST,Europe,1980,1.98
+Ethiopia,ETH,Africa,1980,6.88
+Finland,FIN,Europe,1980,2.72
+Fiji,FJI,Oceania,1980,6.461
+France,FRA,Europe,1980,2.85
+Gabon,GAB,Africa,1980,4.384
+United Kingdom,GBR,Europe,1980,2.69
+Georgia,GEO,Asia,1980,2.964
+Ghana,GHA,Africa,1980,6.749
+Guinea,GIN,Africa,1980,6.114
+Guinea-Bissau,GNB,Africa,1980,5.921
+Equatorial Guinea,GNQ,Africa,1980,5.505
+Greece,GRC,Europe,1980,2.23
+Grenada,GRD,The Americas,1980,6.743
+Guatemala,GTM,The Americas,1980,6.534
+Guam,GUM,Oceania,1980,6.052
+Guyana,GUY,The Americas,1980,5.754
+Honduras,HND,The Americas,1980,7.458
+Croatia,HRV,Europe,1980,2.332
+Haiti,HTI,The Americas,1980,6.324
+Hungary,HUN,Europe,1980,2.02
+Indonesia,IDN,Asia,1980,5.666
+India,IND,Asia,1980,5.906
+Ireland,IRL,Europe,1980,3.78
+Iraq,IRQ,Middle East,1980,6.252
+Iceland,ISL,Europe,1980,4.29
+Italy,ITA,Europe,1980,2.37
+Jamaica,JAM,The Americas,1980,5.419
+Jordan,JOR,Middle East,1980,7.687
+Japan,JPN,Asia,1980,2.001
+Kazakhstan,KAZ,Asia,1980,4.563
+Kenya,KEN,Africa,1980,7.946
+Kyrgyz Republic,KGZ,Asia,1980,5.166
+Cambodia,KHM,Asia,1980,6.967
+Kiribati,KIR,Oceania,1980,6.788
+Kuwait,KWT,Middle East,1980,7.251
+Lao PDR,LAO,Asia,1980,5.961
+Lebanon,LBN,Middle East,1980,5.739
+Liberia,LBR,Africa,1980,6.406
+Libya,LBY,Africa,1980,7.202
+St. Lucia,LCA,The Americas,1980,6.967
+Sri Lanka,LKA,Asia,1980,5.541
+Lesotho,LSO,Africa,1980,5.839
+Lithuania,LTU,Europe,1980,2.56
+Luxembourg,LUX,Europe,1980,2.29
+Latvia,LVA,Europe,1980,1.94
+Morocco,MAR,Africa,1980,7.065
+Moldova,MDA,Europe,1980,3.328
+Madagascar,MDG,Africa,1980,7.3
+Maldives,MDV,Asia,1980,7.021
+Mexico,MEX,The Americas,1980,6.768
+Mali,MLI,Africa,1980,6.967
+Malta,MLT,Europe,1980,3.62
+Myanmar,MMR,Asia,1980,6.051
+Montenegro,MNE,Europe,1980,3.521
+Mongolia,MNG,Asia,1980,6.953
+Mozambique,MOZ,Africa,1980,6.6
+Mauritania,MRT,Africa,1980,6.775
+Mauritius,MUS,Africa,1980,6.167
+Malawi,MWI,Africa,1980,6.94
+Malaysia,MYS,Asia,1980,6.194
+Namibia,NAM,Africa,1980,6.15
+New Caledonia,NCL,Oceania,1980,6.278
+Niger,NER,Africa,1980,7.407
+Nigeria,NGA,Africa,1980,6.354
+Nicaragua,NIC,The Americas,1980,7.336
+Netherlands,NLD,Europe,1980,3.12
+Norway,NOR,Europe,1980,2.85
+Nepal,NPL,Asia,1980,5.959
+New Zealand,NZL,Oceania,1980,4.129
+Oman,OMN,Middle East,1980,7.247
+Pakistan,PAK,Asia,1980,6.6
+Panama,PAN,The Americas,1980,5.87
+Peru,PER,The Americas,1980,6.971
+Philippines,PHL,Asia,1980,7.148
+Papua New Guinea,PNG,Oceania,1980,6.275
+Poland,POL,Europe,1980,2.98
+Puerto Rico,PRI,The Americas,1980,4.657
+Portugal,PRT,Europe,1980,3.16
+Paraguay,PRY,The Americas,1980,6.5
+French Polynesia,PYF,Oceania,1980,5.658
+Qatar,QAT,Middle East,1980,6.971
+Romania,ROU,Europe,1980,2.34
+Russian Federation,RUS,Europe,1980,2.52
+Rwanda,RWA,Africa,1980,8.187
+Saudi Arabia,SAU,Middle East,1980,7.216
+Sudan,SDN,Africa,1980,6.691
+Senegal,SEN,Africa,1980,6.951
+Singapore,SGP,Asia,1980,5.454
+Solomon Islands,SLB,Oceania,1980,6.388
+Sierra Leone,SLE,Africa,1980,5.97
+El Salvador,SLV,The Americas,1980,6.674
+Somalia,SOM,Africa,1980,7.25
+South Sudan,SSD,Africa,1980,6.721
+Sao Tome and Principe,STP,Africa,1980,6.242
+Suriname,SUR,The Americas,1980,6.608
+Slovak Republic,SVK,Europe,1980,3.04
+Slovenia,SVN,Europe,1980,2.324
+Sweden,SWE,Europe,1980,2.17
+Swaziland,SWZ,Africa,1980,6.717
+Syrian Arab Republic,SYR,Middle East,1980,7.467
+Chad,TCD,Africa,1980,6.25
+Togo,TGO,Africa,1980,6.521
+Thailand,THA,Asia,1980,6.147
+Tajikistan,TJK,Asia,1980,6.235
+Turkmenistan,TKM,Asia,1980,6.415
+Timor-Leste,TLS,Asia,1980,6.373
+Tonga,TON,Oceania,1980,7.363
+Trinidad and Tobago,TTO,The Americas,1980,5.264
+Tunisia,TUN,Africa,1980,7.043
+Turkey,TUR,Europe,1980,6.303
+Tanzania,TZA,Africa,1980,6.806
+Uganda,UGA,Africa,1980,6.999
+Ukraine,UKR,Europe,1980,2.24
+Uruguay,URY,The Americas,1980,2.88
+United States,USA,The Americas,1980,3.654
+Uzbekistan,UZB,Asia,1980,6.707
+St. Vincent and the Grenadines,VCT,The Americas,1980,7.224
+Virgin Islands (U.S.),VIR,The Americas,1980,5.615
+Vietnam,VNM,Asia,1980,6.348
+Vanuatu,VUT,Oceania,1980,7.197
+Samoa,WSM,Oceania,1980,7.651
+South Africa,ZAF,Africa,1980,6.173
+Zambia,ZMB,Africa,1980,7.018
+Zimbabwe,ZWE,Africa,1980,7.158
+Aruba,ABW,The Americas,2018,1.669
+Afghanistan,AFG,Asia,2018,5.05
+Angola,AGO,Africa,2018,6.165
+Albania,ALB,Europe,2018,1.771
+United Arab Emirates,ARE,Middle East,2018,1.801
+Argentina,ARG,The Americas,2018,2.335
+Armenia,ARM,Asia,2018,1.553
+Antigua and Barbuda,ATG,The Americas,2018,2.088
+Australia,AUS,Oceania,2018,1.921
+Austria,AUT,Europe,2018,1.44
+Azerbaijan,AZE,Asia,2018,2
+Burundi,BDI,Africa,2018,6.035
+Belgium,BEL,Europe,2018,1.79
+Benin,BEN,Africa,2018,4.846
+Burkina Faso,BFA,Africa,2018,5.607
+Bangladesh,BGD,Asia,2018,2.209
+Bulgaria,BGR,Europe,2018,1.5
+Bahrain,BHR,Middle East,2018,2.075
+Bosnia and Herzegovina,BIH,Europe,2018,1.272
+Belarus,BLR,Europe,2018,1.62
+Belize,BLZ,The Americas,2018,2.611
+Bolivia,BOL,The Americas,2018,3.017
+Brazil,BRA,The Americas,2018,1.801
+Barbados,BRB,The Americas,2018,1.791
+Brunei Darussalam,BRN,Asia,2018,1.893
+Bhutan,BTN,Asia,2018,2.082
+Botswana,BWA,Africa,2018,2.864
+Central African Republic,CAF,Africa,2018,4.368
+Canada,CAN,The Americas,2018,1.61
+Switzerland,CHE,Europe,2018,1.52
+Chile,CHL,The Americas,2018,1.774
+China,CHN,Asia,2018,1.668
+Cote d'Ivoire,CIV,Africa,2018,5.063
+Cameroon,CMR,Africa,2018,4.781
+Colombia,COL,The Americas,2018,1.922
+Comoros,COM,Africa,2018,4.56
+Cabo Verde,CPV,Africa,2018,2.339
+Costa Rica,CRI,The Americas,2018,1.841
+Cuba,CUB,The Americas,2018,1.622
+Cyprus,CYP,Europe,2018,1.455
+Czech Republic,CZE,Europe,2018,1.45
+Germany,DEU,Europe,2018,1.38
+Djibouti,DJI,Africa,2018,3.262
+Denmark,DNK,Europe,2018,1.73
+Dominican Republic,DOM,The Americas,2018,2.51
+Algeria,DZA,Africa,2018,2.893
+Ecuador,ECU,The Americas,2018,2.571
+Eritrea,ERI,Africa,2018,4.363
+Spain,ESP,Europe,2018,1.32
+Estonia,EST,Europe,2018,1.56
+Ethiopia,ETH,Africa,2018,4.517
+Finland,FIN,Europe,2018,1.8
+Fiji,FJI,Oceania,2018,2.589
+France,FRA,Europe,2018,2.01
+Gabon,GAB,Africa,2018,3.963
+United Kingdom,GBR,Europe,2018,1.92
+Georgia,GEO,Asia,2018,1.817
+Ghana,GHA,Africa,2018,4.209
+Guinea,GIN,Africa,2018,5.094
+Guinea-Bissau,GNB,Africa,2018,4.906
+Equatorial Guinea,GNQ,Africa,2018,4.924
+Greece,GRC,Europe,2018,1.29
+Grenada,GRD,The Americas,2018,2.171
+Guatemala,GTM,The Americas,2018,3.263
+Guam,GUM,Oceania,2018,2.406
+Guyana,GUY,The Americas,2018,2.585
+Honduras,HND,The Americas,2018,2.442
+Croatia,HRV,Europe,2018,1.51
+Haiti,HTI,The Americas,2018,3.098
+Hungary,HUN,Europe,2018,1.34
+Indonesia,IDN,Asia,2018,2.484
+India,IND,Asia,2018,2.465
+Ireland,IRL,Europe,2018,2.01
+Iraq,IRQ,Middle East,2018,4.026
+Iceland,ISL,Europe,2018,2.04
+Italy,ITA,Europe,2018,1.43
+Jamaica,JAM,The Americas,2018,2.26
+Jordan,JOR,Middle East,2018,3.244
+Japan,JPN,Asia,2018,1.43
+Kazakhstan,KAZ,Asia,2018,2.64
+Kenya,KEN,Africa,2018,4.406
+Kyrgyz Republic,KGZ,Asia,2018,3.2
+Cambodia,KHM,Asia,2018,2.683
+Kiribati,KIR,Oceania,2018,3.765
+Kuwait,KWT,Middle East,2018,2.6
+Lao PDR,LAO,Asia,2018,3.063
+Lebanon,LBN,Middle East,2018,1.495
+Liberia,LBR,Africa,2018,4.793
+Libya,LBY,Africa,2018,2.507
+St. Lucia,LCA,The Americas,2018,1.913
+Sri Lanka,LKA,Asia,2018,2.339
+Lesotho,LSO,Africa,2018,3.222
+Lithuania,LTU,Europe,2018,1.6
+Luxembourg,LUX,Europe,2018,1.57
+Latvia,LVA,Europe,2018,1.44
+Morocco,MAR,Africa,2018,2.535
+Moldova,MDA,Europe,2018,1.456
+Madagascar,MDG,Africa,2018,4.468
+Maldives,MDV,Asia,2018,2.152
+Mexico,MEX,The Americas,2018,2.272
+Mali,MLI,Africa,2018,6.314
+Malta,MLT,Europe,2018,1.43
+Myanmar,MMR,Asia,2018,2.239
+Montenegro,MNE,Europe,2018,1.666
+Mongolia,MNG,Asia,2018,2.657
+Mozambique,MOZ,Africa,2018,5.418
+Mauritania,MRT,Africa,2018,4.662
+Mauritius,MUS,Africa,2018,1.44
+Malawi,MWI,Africa,2018,5.22
+Malaysia,MYS,Asia,2018,1.956
+Namibia,NAM,Africa,2018,3.56
+New Caledonia,NCL,Oceania,2018,2.28
+Niger,NER,Africa,2018,7.623
+Nigeria,NGA,Africa,2018,5.707
+Nicaragua,NIC,The Americas,2018,2.3
+Netherlands,NLD,Europe,2018,1.72
+Norway,NOR,Europe,2018,1.85
+Nepal,NPL,Asia,2018,2.292
+New Zealand,NZL,Oceania,2018,1.95
+Oman,OMN,Middle East,2018,2.823
+Pakistan,PAK,Asia,2018,3.682
+Panama,PAN,The Americas,2018,2.465
+Peru,PER,The Americas,2018,2.48
+Philippines,PHL,Asia,2018,3.011
+Papua New Guinea,PNG,Oceania,2018,3.812
+Poland,POL,Europe,2018,1.3
+Puerto Rico,PRI,The Americas,2018,1.636
+Portugal,PRT,Europe,2018,1.28
+Paraguay,PRY,The Americas,2018,2.581
+French Polynesia,PYF,Oceania,2018,2.059
+Qatar,QAT,Middle East,2018,2.043
+Romania,ROU,Europe,2018,1.53
+Russian Federation,RUS,Europe,2018,1.7
+Rwanda,RWA,Africa,2018,4.012
+Saudi Arabia,SAU,Middle East,2018,2.818
+Sudan,SDN,Africa,2018,4.421
+Senegal,SEN,Africa,2018,5.134
+Singapore,SGP,Asia,2018,1.19
+Solomon Islands,SLB,Oceania,2018,4.031
+Sierra Leone,SLE,Africa,2018,4.746
+El Salvador,SLV,The Americas,2018,1.958
+Somalia,SOM,Africa,2018,6.565
+South Sudan,SSD,Africa,2018,5.108
+Sao Tome and Principe,STP,Africa,2018,4.634
+Suriname,SUR,The Americas,2018,2.386
+Slovak Republic,SVK,Europe,2018,1.34
+Slovenia,SVN,Europe,2018,1.58
+Sweden,SWE,Europe,2018,1.91
+Swaziland,SWZ,Africa,2018,3.334
+Syrian Arab Republic,SYR,Middle East,2018,2.964
+Chad,TCD,Africa,2018,6.264
+Togo,TGO,Africa,2018,4.655
+Thailand,THA,Asia,2018,1.524
+Tajikistan,TJK,Asia,2018,3.514
+Turkmenistan,TKM,Asia,2018,2.326
+Timor-Leste,TLS,Asia,2018,5.2
+Tonga,TON,Oceania,2018,3.768
+Trinidad and Tobago,TTO,The Americas,2018,1.789
+Tunisia,TUN,Africa,2018,2.25
+Turkey,TUR,Europe,2018,2.041
+Tanzania,TZA,Africa,2018,5.215
+Uganda,UGA,Africa,2018,5.869
+Ukraine,UKR,Europe,2018,1.506
+Uruguay,URY,The Americas,2018,2.033
+United States,USA,The Americas,2018,1.8695
+Uzbekistan,UZB,Asia,2018,2.2
+St. Vincent and the Grenadines,VCT,The Americas,2018,1.997
+Virgin Islands (U.S.),VIR,The Americas,2018,1.77
+Vietnam,VNM,Asia,2018,1.743
+Vanuatu,VUT,Oceania,2018,3.383
+Samoa,WSM,Oceania,2018,4.147
+South Africa,ZAF,Africa,2018,2.387
+Zambia,ZMB,Africa,2018,5.429
+Zimbabwe,ZWE,Africa,2018,3.977
+Bahamas,BHS,The Americas,1980,4.495
+Congo,COG,Africa,1980,5.88
+Egypt,EGY,Africa,1980,6.63
+Micronesia,FSM,Oceania,1980,6.934
+Gambia,GMB,Africa,1980,5.573
+Hong Kong SAR,HKG,Asia,1980,5.162
+Iran,IRN,Middle East,1980,6.927
+Korea,KOR,Asia,1980,6.155
+Macao SAR,MAC,Asia,1980,4.945
+Macedonia,MKD,Europe,1980,3.842
+Venezuela,VEN,The Americas,1980,6.616
+Yemen,YEM,Middle East,1980,7.38
+Congo,COD,Africa,1980,6.001
+Bahamas,BHS,The Americas,2018,1.883
+Congo,COG,Africa,2018,4.919
+Egypt,EGY,Africa,2018,3.336
+Micronesia,FSM,Oceania,2018,3.294
+Gambia,GMB,Africa,2018,5.751
+Hong Kong SAR,HKG,Asia,2018,1.124
+Iran,IRN,Middle East,2018,1.726
+Korea,KOR,Asia,2018,1.187
+Macao SAR,MAC,Asia,2018,1.204
+Macedonia,MKD,Europe,2018,1.511
+Venezuela,VEN,The Americas,2018,2.391
+Yemen,YEM,Middle East,2018,4.284
+Congo,COD,Africa,2018,6.103
